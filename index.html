@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Stock Price Analysis</title>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="container">
+    <h1 class="text-center">Stock Price Analysis</h1>
+
+    <form id="stockForm" class="form-inline justify-content-center mb-4">
+      <div class="form-group">
+        <label for="stockSymbol" class="mr-2">Enter a stock symbol:</label>
+        <input type="text" class="form-control mr-2" id="stockSymbol" name="stockSymbol" required>
+      </div>
+      <button type="submit" class="btn btn-primary">Add Stock</button>
+    </form>
+
+    <div id="chart"></div>
+	<div id="recommendation"></div>
+
+		
+	
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script>
+    // Define the Alpha Vantage API endpoint and parameters
+    var apiUrl = "https://www.alphavantage.co/query";
+    var apiParams = {
+      "function": "TIME_SERIES_DAILY_ADJUSTED",
+      "outputsize": "full",
+      "apikey": "02UFWIM2I3UK5Y9N"
+    };
+
+    // Initialize an empty list of stocks
+    var stocks = [];
+
+    // Handle form submission
+    $("#stockForm").submit(function(event) {
+      event.preventDefault();
+      var stockSymbol = $("#stockSymbol").val().toUpperCase();
+
+      // Update the API parameters with the user's input
+      apiParams["symbol"] = stockSymbol;
+
+      // Send the API request and retrieve the response data
+      $.get(apiUrl, apiParams, function(response) {
+        // Convert the response data to a Plotly-friendly format
+        var stockData = {
+          x: Object.keys(response["Time Series (Daily)"]).reverse(),
+          y: Object.values(response["Time Series (Daily)"]).map(function(value) {
+            return parseFloat(value["4. close"]);
+          }).reverse(),
+          type: "scatter",
+          mode: "lines",
+          name: stockSymbol
+        };
+
+        // Add the stock data to the list of stocks
+        stocks.push(stockData);
+
+        // Plot the stock price data using Plotly
+        var layout = {
+          title: "Stock Price Comparison",
+          xaxis: {title: "Date"},
+          yaxis: {title: "Price"}
+        };
+        Plotly.newPlot("chart", stocks, layout);
+      });
+
+      // Reset the form input
+      $("#stockSymbol").val("");
+    });
+  </script>
+
+</body>
+</html>

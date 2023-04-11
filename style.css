@@ -1,0 +1,16 @@
+h1 {
+	text-align: center;
+	margin-top: 50px;
+  }
+  
+  form {
+	text-align: center;
+	margin-bottom: 20px;
+  }
+  
+  #chart {
+	width: 100%;
+	max-width: 800px;
+	margin: 0 auto;
+  }
+  
